@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>eko_ctt</name>
+	<displayName><![CDATA[CTT Tracking]]></displayName>
+	<version><![CDATA[0.0.1]]></version>
+	<description><![CDATA[Tracking CTT Shipment]]></description>
+	<author><![CDATA[ekosshop]]></author>
+	<tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[Are you sure about removing this module?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>
