@@ -1,0 +1,5 @@
+Versão 0.0.2
+Data : 22/07/2015
+
+Adicionada nova tradução
+Adicionada função para verificar se o site dos CTT está online 

@@ -2,7 +2,7 @@
 /*
 * 2015 ekosshop
 *
-* NOTICE OF LICENSE
+* NOTICE OF LICENSE 
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
 * that is bundled with this package in the file LICENSE.txt.
@@ -33,7 +33,7 @@ class eko_ctt extends Module
 	{
 		$this->name 	= 'eko_ctt';
 		$this->tab     	= 'shipping_logistics';
-		$this->version 	= '0.0.1';
+		$this->version 	= '0.0.2';
 		$this->author 	= 'ekosshop';
 
 		$this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
@@ -330,9 +330,19 @@ class eko_ctt extends Module
 
 		$order_id  	   = $params['id_order'];
 		$order 	   	   = new Order($order_id);
+/*
+		$carrier   = new Carrier($order->id_carrier);
+		$carrier->name = ($carrier->name == '0' ? "" : $carrier->name);
 
+		if (empty($order->shipping_number) or ($carrier->name != 'CTT' and $carrier->name != 'CTT Express'))
+			return;
+
+		print_r($order->shipping_number." => ".$order->id_carrier. " CTT = ".Configuration::get('EKO_CTT_TR_0'));
 		if (empty($order->shipping_number) or ($order->id_carrier != Configuration::get('EKO_CTT_TR_0') and $order->id_carrier != Configuration::get('EKO_CTT_TR_1')))
-			return;		
+			return;
+*/
+		if (empty($order->shipping_number))
+			return;
 
 		$track = $this->_getEncomendaTrack($order->shipping_number, $order_id, true);	
 		if(!is_string($track)) return;
@@ -364,8 +374,19 @@ class eko_ctt extends Module
 		$order_id  = $params['order']->id;
 		$order 	   = new Order($order_id);
 
+/*
+		$carrier   = new Carrier($order->id_carrier);
+		$carrier->name = ($carrier->name == '0' ? "" : $carrier->name);
+
+		if (empty($order->shipping_number) or ($carrier->name != 'CTT' and $carrier->name != 'CTT Express'))
+			return;
+
+		print_r($order->shipping_number." => ".$order->id_carrier. " CTT = ".Configuration::get('EKO_CTT_TR_0'));
 		if (empty($order->shipping_number) or ($order->id_carrier != Configuration::get('EKO_CTT_TR_0') and $order->id_carrier != Configuration::get('EKO_CTT_TR_1')))
-			return;			
+			return;
+*/
+		if (empty($order->shipping_number))
+			return;	
 
 		$track = $this->_getEncomendaTrack($order->shipping_number, $order_id);
 		if(!is_string($track)) return;
@@ -389,6 +410,9 @@ class eko_ctt extends Module
 			if($updateMode) return 1;
 			$sResult = $this->translateTracking($tracking['html']);
 		} else {
+			if(!$this->checkOnline("www.ctt.pt")) {
+				return 0;
+			}
 			$sSearch = "details_0";
 			$aParams = array ('objects' => '', 'showResults' => 'true', 'pesqObjecto.objectoId' => $trackingNumber );
 
@@ -454,6 +478,21 @@ class eko_ctt extends Module
 		}
 
 		return ($sResult);
+	}
+
+	private function checkOnline($domain) {
+		$curlInit = curl_init($domain);
+		curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
+		curl_setopt($curlInit,CURLOPT_HEADER,true);
+		curl_setopt($curlInit,CURLOPT_NOBODY,true);
+		curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
+
+		//get answer
+		$response = curl_exec($curlInit);
+
+		curl_close($curlInit);
+		if ($response) return true;
+		return false;
 	}
 
 	private function getTrackingDB($trackingNumber) {
@@ -549,6 +588,7 @@ class eko_ctt extends Module
 		$html = str_replace("Destinat&aacute;rio ausente, empresa encerrada, Avisado na Loja CTT",$this->l('Recipient missing or company closed, notice at CTT Shop '),$html);
 		$html = str_replace("Entrega n&atilde;o efectuada, Aguarda nova tentativa de entrega",$this->l('Not Delivered, waiting for new delivery attempt'),$html);
 
+		$html = str_replace("Pedido de Encaminhamento/SIGA, Reexpedido",$this->l('Request Forwarding / SIGA, transhipped'),$html);
 		$html = str_replace("Objecto n&atilde;o encontrado",$this->l('Not Found'),$html);
 		$html = str_replace("NÃ£o foi possÃ­vel obter mais informaÃ§Ã£o sobre o objeto.",$this->l('Shipment not Found'),$html);
 

@@ -2,8 +2,8 @@
 <module>
 	<name>eko_ctt</name>
 	<displayName><![CDATA[CTT Tracking]]></displayName>
-	<version><![CDATA[0.0.1]]></version>
-	<description><![CDATA[Tracking CTT Shipment]]></description>
+	<version><![CDATA[0.0.2]]></version>
+	<description><![CDATA[Tracking CTT Shipment]]></description> 
 	<author><![CDATA[ekosshop]]></author>
 	<tab><![CDATA[shipping_logistics]]></tab>
 	<confirmUninstall><![CDATA[Are you sure about removing this module?]]></confirmUninstall>

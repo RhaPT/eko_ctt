@@ -1,6 +1,6 @@
 <?php
 
-global $_MODULE;
+global $_MODULE; 
 $_MODULE = array();
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_8549e4e00ef143d9f88cd7f75afd8e28'] = 'CTT Tracking';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_aff11be65ce7afbb6936c625ed152f7f'] = 'Tracking CTT Shipment';
@@ -41,6 +41,7 @@ $_MODULE['<{eko_ctt}prestashop>eko_ctt_907d8e0dd4050508ef963b9706cbc0da'] = 'Ava
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_0ff4f2b1e8003c9a52f22af1a004e279'] = 'Not Delivered';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_27adbce4b0b88bbcbe9298941457b5fd'] = 'Recipient missing or company closed, notice at CTT Shop ';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_6cd479665a3fc67f45b411d984ef9397'] = 'Not Delivered, waiting for new delivery attempt';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_1012266ae8ddd38e1f81de5babb0e125'] = 'Request Forwarding / SIGA, transhipped';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_9d1ead73e678fa2f51a70a933b0bf017'] = 'Not Found';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_0ea932cf39abb75735036e34121010da'] = 'Shipment not Found';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_86f5978d9b80124f509bdb71786e929e'] = 'January';
