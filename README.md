@@ -1,6 +1,5 @@
 # eko_ctt
 Prestashop CTT Módulo
-<<<<<<< HEAD
 
 ## Info
 
@@ -43,4 +42,3 @@ Siga as seguintes regras :
 #### Compatibilidade
 
 PrestaShop 1.6.1
->>>>>>> origin/dev
