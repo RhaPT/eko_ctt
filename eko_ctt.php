@@ -2,7 +2,7 @@
 /*
 * 2015 ekosshop
 *
-* NOTICE OF LICENSE 
+* NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
 * that is bundled with this package in the file LICENSE.txt.
@@ -33,7 +33,7 @@ class eko_ctt extends Module
 	{
 		$this->name 	= 'eko_ctt';
 		$this->tab     	= 'shipping_logistics';
-		$this->version 	= '0.0.2';
+		$this->version 	= '0.0.3';
 		$this->author 	= 'ekosshop';
 
 		$this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
@@ -333,15 +333,14 @@ class eko_ctt extends Module
 /*
 		$carrier   = new Carrier($order->id_carrier);
 		$carrier->name = ($carrier->name == '0' ? "" : $carrier->name);
-
 		if (empty($order->shipping_number) or ($carrier->name != 'CTT' and $carrier->name != 'CTT Express'))
 			return;
-
 		print_r($order->shipping_number." => ".$order->id_carrier. " CTT = ".Configuration::get('EKO_CTT_TR_0'));
-		if (empty($order->shipping_number) or ($order->id_carrier != Configuration::get('EKO_CTT_TR_0') and $order->id_carrier != Configuration::get('EKO_CTT_TR_1')))
+		if (empty($order->shipping_number))
 			return;
 */
-		if (empty($order->shipping_number))
+
+		if (empty($order->shipping_number) or ($order->id_carrier != Configuration::get('EKO_CTT_TR_0') and $order->id_carrier != Configuration::get('EKO_CTT_TR_1')))
 			return;
 
 		$track = $this->_getEncomendaTrack($order->shipping_number, $order_id, true);	
@@ -374,19 +373,16 @@ class eko_ctt extends Module
 		$order_id  = $params['order']->id;
 		$order 	   = new Order($order_id);
 
-/*
-		$carrier   = new Carrier($order->id_carrier);
-		$carrier->name = ($carrier->name == '0' ? "" : $carrier->name);
+//		$carrier   = new Carrier($order->id_carrier);
+//		$carrier->name = ($carrier->name == '0' ? "" : $carrier->name);
+//		if (empty($order->shipping_number) or ($carrier->name != 'CTT' and $carrier->name != 'CTT Express'))
+//			return;
+//		print_r($order->shipping_number." => ".$order->id_carrier. " CTT = ".Configuration::get('EKO_CTT_TR_0'));
+//		if (empty($order->shipping_number))
+//			return;	
 
-		if (empty($order->shipping_number) or ($carrier->name != 'CTT' and $carrier->name != 'CTT Express'))
-			return;
-
-		print_r($order->shipping_number." => ".$order->id_carrier. " CTT = ".Configuration::get('EKO_CTT_TR_0'));
 		if (empty($order->shipping_number) or ($order->id_carrier != Configuration::get('EKO_CTT_TR_0') and $order->id_carrier != Configuration::get('EKO_CTT_TR_1')))
 			return;
-*/
-		if (empty($order->shipping_number))
-			return;	
 
 		$track = $this->_getEncomendaTrack($order->shipping_number, $order_id);
 		if(!is_string($track)) return;
@@ -406,6 +402,7 @@ class eko_ctt extends Module
 		}
 
 		$tracking = $this->getTrackingDB($trackingNumber);
+
 		if($tracking['entregue'] > 0) {
 			if($updateMode) return 1;
 			$sResult = $this->translateTracking($tracking['html']);
@@ -414,7 +411,7 @@ class eko_ctt extends Module
 				return 0;
 			}
 			$sSearch = "details_0";
-			$aParams = array ('objects' => '', 'showResults' => 'true', 'pesqObjecto.objectoId' => $trackingNumber );
+			$aParams = array ('objects' => $trackingNumber, 'showResults' => 'true', 'pesqObjecto.objectoId' => $trackingNumber );
 
 			// Build Http query using params
 			$sQuery = http_build_query ($aParams);
@@ -481,17 +478,21 @@ class eko_ctt extends Module
 	}
 
 	private function checkOnline($domain) {
-		$curlInit = curl_init($domain);
-		curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
-		curl_setopt($curlInit,CURLOPT_HEADER,true);
-		curl_setopt($curlInit,CURLOPT_NOBODY,true);
-		curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
+		if(function_exists('curl_version')) {
+			$curlInit = curl_init($domain);
+			curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
+			curl_setopt($curlInit,CURLOPT_HEADER,true);
+			curl_setopt($curlInit,CURLOPT_NOBODY,true);
+			curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
 
-		//get answer
-		$response = curl_exec($curlInit);
+			//get answer
+			$response = curl_exec($curlInit);
 
-		curl_close($curlInit);
-		if ($response) return true;
+			curl_close($curlInit);
+			if ($response) return true;
+		} else {
+			return true;
+		}
 		return false;
 	}
 
