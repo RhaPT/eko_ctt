@@ -1,10 +1,17 @@
 Versão 0.0.2
 Data : 22/07/2015
 
-Adicionada nova tradução
+Adicionados novos estados do envio
 Adicionada função para verificar se o site dos CTT está online 
 
 Versão 0.0.3
 Data : 25/07/2015
 
 Alteração dps CTT agora utiliza o id objecto em vez do pesqObjecto.objectoId
+
+versão 0.0.4
+Data : 27/07/2015
+
+Adicionados novos estados do envio
+Testa se o modulo está activo nos Hooks
+Passa a testar o nome da transportadora caso o id falhe
