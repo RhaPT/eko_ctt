@@ -1,6 +1,6 @@
 <?php
 
-global $_MODULE; 
+global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_8549e4e00ef143d9f88cd7f75afd8e28'] = 'CTT Tracking';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_aff11be65ce7afbb6936c625ed152f7f'] = 'Seguir Encomenda CTT';
@@ -40,10 +40,16 @@ $_MODULE['<{eko_ctt}prestashop>eko_ctt_96fd07f8244c1d8b9a38930ea4bdec97'] = 'Ace
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_907d8e0dd4050508ef963b9706cbc0da'] = 'Disponível para levantar';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_0ff4f2b1e8003c9a52f22af1a004e279'] = 'Entrega não conseguida';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_27adbce4b0b88bbcbe9298941457b5fd'] = 'Destinatário ausente, empresa encerrada, Avisado na Loja CTT';
-$_MODULE['<{eko_ctt}prestashop>eko_ctt_6cd479665a3fc67f45b411d984ef9397'] = 'Entrega não efectuada, Aguarda nova tentativa de entrega.';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_6cd479665a3fc67f45b411d984ef9397'] = 'Entrega não efectuada, Aguarda nova tentativa de entrega';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_1012266ae8ddd38e1f81de5babb0e125'] = 'Pedido de Encaminhamento/SIGA, Reexpedido';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_9d1ead73e678fa2f51a70a933b0bf017'] = 'Objecto não encontrado';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_0ea932cf39abb75735036e34121010da'] = 'Objecto não encontrado';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_e5118da748324db5b51ea1c9bf04a57d'] = 'Endereço Insuficiente';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_569b506f9bc511a1b93035883f3d8f0a'] = 'Receção internacional';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_f5ddeec101deb1bf6214eff0024601cf'] = 'Expedição internacional';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_022c8cbe9b63e46a7ad2c9f5570f5aea'] = 'Entrada armazém para aplicação de legislação';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_28657dbeb901b933c153599c59112a79'] = 'Para apresentação à Alfândega';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_107789e45c87228c57f8fefbbb44de2b'] = 'Autorização de Saída pela Alfândega';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_86f5978d9b80124f509bdb71786e929e'] = 'Janeiro';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_659e59f062c75f81259d22786d6c44aa'] = 'Fevereiro';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_fa3e5edac607a88d8fd7ecb9d6d67424'] = 'Março';

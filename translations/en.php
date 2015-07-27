@@ -1,6 +1,6 @@
 <?php
 
-global $_MODULE; 
+global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_8549e4e00ef143d9f88cd7f75afd8e28'] = 'CTT Tracking';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_aff11be65ce7afbb6936c625ed152f7f'] = 'Tracking CTT Shipment';
@@ -39,11 +39,17 @@ $_MODULE['<{eko_ctt}prestashop>eko_ctt_395f5ea79612ee3f48c344be7b3de0a0'] = 'Nat
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_96fd07f8244c1d8b9a38930ea4bdec97'] = 'Pickup';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_907d8e0dd4050508ef963b9706cbc0da'] = 'Available for Pickup';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_0ff4f2b1e8003c9a52f22af1a004e279'] = 'Not Delivered';
-$_MODULE['<{eko_ctt}prestashop>eko_ctt_27adbce4b0b88bbcbe9298941457b5fd'] = 'Recipient missing or company closed, notice at CTT Shop';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_27adbce4b0b88bbcbe9298941457b5fd'] = 'Recipient missing or company closed, notice at CTT Shop ';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_6cd479665a3fc67f45b411d984ef9397'] = 'Not Delivered, waiting for new delivery attempt';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_1012266ae8ddd38e1f81de5babb0e125'] = 'Request Forwarding / SIGA, transhipped';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_9d1ead73e678fa2f51a70a933b0bf017'] = 'Not Found';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_0ea932cf39abb75735036e34121010da'] = 'Shipment not Found';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_e5118da748324db5b51ea1c9bf04a57d'] = 'Shipment address incomplete';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_569b506f9bc511a1b93035883f3d8f0a'] = 'International delivery';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_f5ddeec101deb1bf6214eff0024601cf'] = 'International Shipment';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_022c8cbe9b63e46a7ad2c9f5570f5aea'] = 'Waiting for legal procedure.';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_28657dbeb901b933c153599c59112a79'] = 'For customs presentation';
+$_MODULE['<{eko_ctt}prestashop>eko_ctt_107789e45c87228c57f8fefbbb44de2b'] = 'Release through customs';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_86f5978d9b80124f509bdb71786e929e'] = 'January';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_659e59f062c75f81259d22786d6c44aa'] = 'February';
 $_MODULE['<{eko_ctt}prestashop>eko_ctt_fa3e5edac607a88d8fd7ecb9d6d67424'] = 'March';
