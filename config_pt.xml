@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
-	<name>eko_ctt</name>
-	<displayName><![CDATA[MailChimp Sync]]></displayName>
-	<version><![CDATA[0.0.3]]></version>
-	<description><![CDATA[MailChimp Update]]></description>
-	<author><![CDATA[ekosshop]]></author>
-	<tab><![CDATA[administration]]></tab>
-	<confirmUninstall><![CDATA[Pretende remover este módulo?]]></confirmUninstall>
-	<is_configurable>1</is_configurable>
-	<need_instance>1</need_instance>
-	<limited_countries></limited_countries>
+    <name>eko_ctt</name>
+    <displayName><![CDATA[CTT Tracking]]></displayName>
+    <version><![CDATA[0.0.4]]></version>
+    <description><![CDATA[Seguir Encomenda CTT]]></description>
+    <author><![CDATA[ekosshop]]></author>
+    <tab><![CDATA[shipping_logistics]]></tab>
+    <confirmUninstall><![CDATA[Pretende remover este módulo?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>1</need_instance>
+    <limited_countries></limited_countries>
 </module>
