@@ -15,3 +15,9 @@ Data : 27/07/2015
 Adicionados novos estados do envio
 Testa se o modulo está activo nos Hooks
 Passa a testar o nome da transportadora caso o id falhe
+
+Versão 0.0.5
+Data : 29/07/2015
+
+Correção do Bug na rotina CTTchekonline()
+Correção do Bug na rotina _getEncomendaTrack

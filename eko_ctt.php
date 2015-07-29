@@ -33,25 +33,25 @@ class eko_ctt extends Module
     {
         $this->name     = 'eko_ctt';
         $this->tab      = 'shipping_logistics';
-        $this->version  = '0.0.4';
+        $this->version  = '0.0.5';
         $this->author   = 'ekosshop';
 
         $this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
 
         $config = Configuration::getMultiple(array('EKO_CTT_CRON', 'EKO_CTT_CHANGE_STATS', 'EKO_CTT_OS_0', 'EKO_CTT_TR_0', 'EKO_CTT_TR_1'));
-        if (isset($config['EKO_CTT_CRON']))
+        if(isset($config['EKO_CTT_CRON']))
             $this->ctt_cron = $config['EKO_CTT_CRON'];
 
-        if (isset($config['EKO_CTT_CHANGE_STATS']))
+        if(isset($config['EKO_CTT_CHANGE_STATS']))
             $this->ctt_change = $config['EKO_CTT_CHANGE_STATS'];
 
-        if (isset($config['EKO_CTT_OS_0']))
+        if(isset($config['EKO_CTT_OS_0']))
             $this->ctt_os_0 = $config['EKO_CTT_OS_0'];
 
-        if (isset($config['EKO_CTT_TR_0']))
+        if(isset($config['EKO_CTT_TR_0']))
             $this->ctt_tr_0 = $config['EKO_CTT_TR_0'];
 
-        if (isset($config['EKO_CTT_TR_1']))
+        if(isset($config['EKO_CTT_TR_1']))
             $this->ctt_tr_1 = $config['EKO_CTT_TR_1'];
 
         $this->bootstrap = true;
@@ -67,7 +67,7 @@ class eko_ctt extends Module
         if(!(Configuration::get('EKO_CTT_OS_0') > 0))
             $this->create_states();
 
-        if (!parent::install() || !$this->registerHook('displayAdminOrder') || !$this->registerHook('displayOrderDetail')
+        if(!parent::install() || !$this->registerHook('displayAdminOrder') || !$this->registerHook('displayOrderDetail')
                 || !$this->registerHook('DisplayBackOfficeHeader') || !$this->registerHook('DisplayHeader'))
             return false;
 
@@ -76,7 +76,7 @@ class eko_ctt extends Module
  
     public function uninstall()
     {
-        if (!parent::uninstall())
+        if(!parent::uninstall())
             return false;
 
         Configuration::deleteByName("EKO_CTT_CRON");
@@ -99,7 +99,7 @@ class eko_ctt extends Module
         FROM `'._DB_PREFIX_.'lang`
         ');
 
-        foreach ($this->order_state as $key => $value)
+        foreach($this->order_state as $key => $value)
         {
             Db::getInstance()->Execute
             ('
@@ -111,7 +111,7 @@ class eko_ctt extends Module
 
             $this->figura   = Db::getInstance()->Insert_ID();
 
-            foreach ( $languages as $language_atual )
+            foreach( $languages as $language_atual )
             {
                 Db::getInstance()->Execute
                 ('
@@ -145,7 +145,7 @@ class eko_ctt extends Module
     {
         $this->_html = '<h2>'.$this->displayName.'</h2>';
 
-        if (Tools::isSubmit('btnSubmit'))
+        if(Tools::isSubmit('btnSubmit'))
         {
             $this->_postProcess();
         }
@@ -160,7 +160,7 @@ class eko_ctt extends Module
 
     private function _postProcess()
     {
-        if (Tools::isSubmit('btnSubmit'))
+        if(Tools::isSubmit('btnSubmit'))
         {
             Configuration::updateValue('EKO_CTT_CRON',          Tools::getValue('cron'));
             Configuration::updateValue('EKO_CTT_CHANGE_STATS',  Tools::getValue('change'));
@@ -271,7 +271,7 @@ class eko_ctt extends Module
         $helper->module = $this;
         $helper->show_toolbar = false;
         $helper->table = $this->table;
-        $lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
+        $lang   = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
         $helper->default_form_language = $lang->id;
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $helper->identifier = $this->identifier;
@@ -314,13 +314,13 @@ class eko_ctt extends Module
 
     public function hookdisplayAdminOrder($params)
     {
-        if (!$this->active)
+        if(!$this->active)
             return;
 
-        $order_id      = $params['id_order'];
-        $order         = new Order($order_id);
+        $order_id = $params['id_order'];
+        $order    = new Order($order_id);
 
-        if (empty($order->shipping_number) or (!$this->_isThisCarrier($order->id_carrier)))
+        if(empty($order->shipping_number) or (!$this->_isThisCarrier($order->id_carrier)))
             return;
 
         $track = $this->_getEncomendaTrack($order->shipping_number, $order_id, true);   
@@ -347,13 +347,13 @@ class eko_ctt extends Module
 
     public function hookdisplayOrderDetail($params)
     {
-        if (!$this->active)
+        if(!$this->active)
             return;
 
-        $order_id      = $params['order']->id;
-        $order         = new Order($order_id);
+        $order_id = $params['order']->id;
+        $order    = new Order($order_id);
 
-        if (empty($order->shipping_number) or (!$this->_isThisCarrier($order->id_carrier)))
+        if(empty($order->shipping_number) or (!$this->_isThisCarrier($order->id_carrier)))
             return;
 
         $track = $this->_getEncomendaTrack($order->shipping_number, $order_id);
@@ -368,8 +368,8 @@ class eko_ctt extends Module
     {
         if($this->verifyTrackingDB($trackingNumber) == 0) {
             $orderOBJ = new Order($order);
-            if ($this->_isThisCarrier($order->id_carrier))
-                return; 
+            if(!$this->_isThisCarrier($orderOBJ->id_carrier))
+                return;
             $this->setTrackingDB($order, $trackingNumber);
         }
 
@@ -379,7 +379,7 @@ class eko_ctt extends Module
             if($updateMode) return 1;
             $sResult = $this->translateTracking($tracking['html']);
         } else {
-            if(!$this->checkOnline("www.ctt.pt")) {
+            if(!$this->CTTcheckOnline("http://www.ctt.pt")) {
                 return 0;
             }
             $sSearch = "details_0";
@@ -445,7 +445,7 @@ class eko_ctt extends Module
         return ($sResult);
     }
 
-    private function checkOnline($domain) {
+    private function CTTcheckOnline($domain) {
         if(function_exists('curl_version')) {
             $curlInit = curl_init($domain);
             curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
@@ -453,7 +453,6 @@ class eko_ctt extends Module
             curl_setopt($curlInit,CURLOPT_NOBODY,true);
             curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
 
-            //get answer
             $response = curl_exec($curlInit);
 
             curl_close($curlInit);
@@ -615,9 +614,9 @@ class eko_ctt extends Module
     {
         $result=false;
 
-        if (is_file($source)) {
-            if ($dest[strlen($dest)-1]=='/') {
-                if (!file_exists($dest)) {
+        if(is_file($source)) {
+            if($dest[strlen($dest)-1]=='/') {
+                if(!file_exists($dest)) {
                     cmfcDirectory::makeAll($dest,$options['folderPermission'],true);
                 }
                 $__dest=$dest."/".basename($source);
@@ -628,8 +627,8 @@ class eko_ctt extends Module
             chmod($__dest,$options['filePermission']);
 
         } elseif(is_dir($source)) {
-            if ($dest[strlen($dest)-1]=='/') {
-                if ($source[strlen($source)-1]=='/') {
+            if($dest[strlen($dest)-1]=='/') {
+                if($source[strlen($source)-1]=='/') {
                     //Copy only contents
                 } else {
                     $dest=$dest.basename($source);
@@ -637,7 +636,7 @@ class eko_ctt extends Module
                     chmod($dest,$options['filePermission']);
                 }
             } else {
-                if ($source[strlen($source)-1]=='/') {
+                if($source[strlen($source)-1]=='/') {
                      @mkdir($dest,$options['folderPermission']);
                     chmod($dest,$options['filePermission']);
                 } else {
