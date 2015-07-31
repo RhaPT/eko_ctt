@@ -33,7 +33,7 @@ class eko_ctt extends Module
     {
         $this->name     = 'eko_ctt';
         $this->tab      = 'shipping_logistics';
-        $this->version  = '0.0.5';
+        $this->version  = '0.0.6';
         $this->author   = 'ekosshop';
 
         $this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
@@ -557,13 +557,7 @@ class eko_ctt extends Module
 
     private function translateTracking($html)
     {
-        $html = str_replace("Hora",$this->l('Time'),$html);
-        $html = str_replace("Estado",$this->l('Status'),$html);
-        $html = str_replace("Motivo",$this->l('Info'),$html);
-        $html = str_replace("Local",$this->l('Location'),$html);
-        $html = str_replace("Recetor",$this->l('Receiver'),$html);
-
-        $html = str_replace("Envio",$this->l('Shipment'),$html);
+        $html = str_replace("Entrega no Local",$this->l('Delivered'),$html);
         $html = str_replace("Entrega conseguida",$this->l('Delivered'),$html);
         $html = str_replace("Em distribui&ccedil;&atilde;o",$this->l('In Transit'),$html);
         $html = str_replace("Expedi&ccedil;&atilde;o nacional",$this->l('National Shipment'),$html);
@@ -585,6 +579,17 @@ class eko_ctt extends Module
         $html = str_replace("Entrada armaz&eacute;m para aplica&ccedil;&atilde;o de legisla&ccedil;&atilde;o",$this->l('Waiting for legal procedure.'),$html);
         $html = str_replace("Para apresenta&ccedil;&atilde;o &agrave; Alf&acirc;ndega",$this->l('For customs presentation'),$html);
         $html = str_replace("Autoriza&ccedil;&atilde;o de Sa&iacute;da pela Alf&acirc;ndega",$this->l('Release through customs'),$html);
+
+        $html = str_replace("Reimpress&atilde;o de r&oacute;tulo",$this->l('Create New Label'),$html);
+        $html = str_replace("Local n&atilde;o definido",$this->l('Location not set'),$html);
+
+        $html = str_replace("Envio",$this->l('Shipment'),$html);
+
+		$html = str_replace("Hora",$this->l('Time'),$html);
+        $html = str_replace("Estado",$this->l('Status'),$html);
+        $html = str_replace("Motivo",$this->l('Info'),$html);
+        $html = str_replace("Local",$this->l('Location'),$html);
+        $html = str_replace("Recetor",$this->l('Receiver'),$html);
 
         $html = str_replace("Janeiro",$this->l('January'),$html);
         $html = str_replace("Fevereiro",$this->l('February'),$html);
