@@ -2,7 +2,7 @@ Versão 0.0.2
 Data : 22/07/2015
 
 Adicionados novos estados do envio
-Adicionada função para verificar se o site dos CTT está online 
+Adicionada função para verificar se o site dos CTT está online (CTTchekonline())
 
 Versão 0.0.3
 Data : 25/07/2015
@@ -26,3 +26,26 @@ Versão 0.0.6
 Data : 31/07/2015
 
 Adicionados novos estados do envio
+
+versão 0.1.0
+Data : 20/08/2015
+
+Alterado o timeout da rotina CTTchekonline()
+Corrigido bug na tabela dos ctt ( </tr><td> )
+Criado array com estados do envio
+Nova função : getCTTStates
+    getCTTStates()            => devolve array com todos os estados
+    getCTTStates(estado ID)   => devolve array com id e nome do estado ou false caso não exista
+    getCTTStates(estado Nome) => devolve array com id e nome do estado ou false caso não exista
+
+Criado um hook : actionEkoCttUpdate
+    Chamado sempre que o estado do envio altere
+    params => array estado (id, name), order Id
+
+    Exemplo : 
+        public function hookactionEkoCttUpdate($params) {
+            // $params['id_status']['id']
+            // $params['id_status']['name']
+            // $params['id_order']
+
+        }

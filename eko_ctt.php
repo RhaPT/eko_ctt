@@ -27,13 +27,13 @@ if (!defined('_PS_VERSION_'))
 
 class eko_ctt extends Module
 {
-    public $ctt_URL, $ctt_cron, $ctt_os_0, $ctt_tr_0, $ctt_tr_1, $ctt_change;
+    public $ctt_URL, $ctt_cron, $ctt_os_0, $ctt_tr_0, $ctt_tr_1, $ctt_change, $ctt_Status;
 
     public function __construct()
     {
         $this->name     = 'eko_ctt';
         $this->tab      = 'shipping_logistics';
-        $this->version  = '0.0.6';
+        $this->version  = '0.1.0';
         $this->author   = 'ekosshop';
 
         $this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
@@ -60,6 +60,21 @@ class eko_ctt extends Module
         $this->displayName = $this->l('CTT Tracking');
         $this->description = $this->l('Tracking CTT Shipment');
         $this->confirmUninstall = $this->l('Are you sure about removing this module?');
+
+        $this->ctt_Status  = array( 0  => array('id' => 999001, 'name' => $this->l('Delivered')),
+                                    1  => array('id' => 999002, 'name' => $this->l('Available for Pickup')),
+                                    2  => array('id' => 999003, 'name' => $this->l('Shipment address incomplete')),
+                                    3  => array('id' => 999004, 'name' => $this->l('Not Delivered')),
+                                    4  => array('id' => 999005, 'name' => $this->l('In Transit')),
+                                    5  => array('id' => 999006, 'name' => $this->l('Shipment')),
+                                    6  => array('id' => 999007, 'name' => $this->l('Pickup')),
+                                    7  => array('id' => 999008, 'name' => $this->l('Create New Label')),
+                                    8  => array('id' => 999009, 'name' => $this->l('International delivery')),
+                                    9  => array('id' => 999010, 'name' => $this->l('International Shipment')),
+                                    10 => array('id' => 999011, 'name' => $this->l('Waiting for legal procedure.')),
+                                    11 => array('id' => 999012, 'name' => $this->l('Release through customs')),
+                                    12 => array('id' => 999013, 'name' => $this->l('For customs presentation'))
+                                  );
     }
 
     public function install()
@@ -68,12 +83,12 @@ class eko_ctt extends Module
             $this->create_states();
 
         if(!parent::install() || !$this->registerHook('displayAdminOrder') || !$this->registerHook('displayOrderDetail')
-                || !$this->registerHook('DisplayBackOfficeHeader') || !$this->registerHook('DisplayHeader'))
+                || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader'))
             return false;
 
         return true;
     }
- 
+
     public function uninstall()
     {
         if(!parent::uninstall())
@@ -173,7 +188,7 @@ class eko_ctt extends Module
     private function _displayEkoCTT()
     {
         $this->_html .= '
-        <div class="alert alert-info">
+        <div class="alert">
             <img src="../modules/eko_ctt/logo_ctt.png" style="float:left; margin-right:15px;" width="86" height="86">
             <p><strong>'.$this->l('This module allows Tracking CTT Shipment.').'</p>
             <p><br/>'.$this->l('This module adds a tracking result in order detail.').'</p>
@@ -312,7 +327,7 @@ class eko_ctt extends Module
         return $results;
     }
 
-    public function hookdisplayAdminOrder($params)
+    public function hookDisplayAdminOrder($params)
     {
         if(!$this->active)
             return;
@@ -345,7 +360,7 @@ class eko_ctt extends Module
         }
     }
 
-    public function hookdisplayOrderDetail($params)
+    public function hookDisplayOrderDetail($params)
     {
         if(!$this->active)
             return;
@@ -363,7 +378,7 @@ class eko_ctt extends Module
 
         return $this->display(__FILE__, '/ctt.tpl');
     }
-    
+
     private function _getEncomendaTrack($trackingNumber, $order, $admin = false, $updateMode = false)
     {
         if($this->verifyTrackingDB($trackingNumber) == 0) {
@@ -419,9 +434,18 @@ class eko_ctt extends Module
                 $this->changeTrackOrderState($order);
             }
 
+            $sResult = str_replace(' class="group"','',$sResult);
+            $sResult = str_replace('<tr> ', '<tr>', $sResult);
+            $sResult = str_replace('<td> ', '<td>', $sResult);
+            $sResult = str_replace('</tr> ','</tr>',$sResult);
+            $sResult = str_replace('</td> ','</td>',$sResult);
+            // Bug CTT
+            $sResult = str_replace('</tr><td>','</tr><tr><td>',$sResult);
+            $sResult = str_replace('<tr><tr>','<tr>',$sResult);
+            // End Bug CTT
+
             $sResult = str_replace("<tr>",'<tr class="item">',$sResult);
-            $sResult = str_replace('class="group"','',$sResult);
-            $sResult = str_replace('<td colspan="5">','<td colspan=5" style="background-color: #f2f2f2;">',$sResult);
+            $sResult = str_replace('<td colspan="5">','<td colspan="5" style="background-color: #f2f2f2;">',$sResult);
 
             if(!empty($sResult)) {
                 $this->updateTrackingDb($trackingNumber, $entregue, $sResult);
@@ -429,6 +453,13 @@ class eko_ctt extends Module
                 $sResult = $this->translateTracking($sResult);
             } else {
                 return 0;
+            }
+
+            $xTmp = $this->verifyStatus($sResult);
+            if($xTmp != $this->verifyStatus($this->translateTracking($tracking['html']))) {
+                $xTmp = $this->getCTTStates($xTmp);
+                if(is_array($xTmp))
+                    $this->actionEkoCttUpdate($xTmp, $order);
             }
         }
 
@@ -445,10 +476,36 @@ class eko_ctt extends Module
         return ($sResult);
     }
 
+    private function verifyStatus($CTTstr) {
+        if(empty($CTTstr))
+            return '';
+
+        $iPos0 = strpos($CTTstr, '</td>');
+        $iPos1 = strpos($CTTstr, '<td colspan="5"');
+        if($iPos1 === false) {
+            $iPos1 = $iPos0;
+        }
+        if($iPos0 > $iPos1) {
+            $xTmp  = substr($CTTstr, $iPos0+5);
+            $iPos0 = $this->strposX($xTmp, '<td>', 2);
+            $xTmp  = substr($xTmp, $iPos0+4);
+            $iPos1 = strpos($xTmp, '</td>');
+            $xTmp  = substr($xTmp, 0, $iPos1);
+        } else {
+            $xTmp  = substr($CTTstr, $iPos0);
+            $iPos0 = $this->strposX($xTmp, '<td>', 1);
+            $xTmp  = substr($xTmp, $iPos0+4);
+            $iPos1 = strpos($xTmp, '</td>');
+            $xTmp  = substr($xTmp, 0, $iPos1);
+        }
+
+        return($xTmp);      
+    }
+
     private function CTTcheckOnline($domain) {
         if(function_exists('curl_version')) {
             $curlInit = curl_init($domain);
-            curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
+            curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,20);
             curl_setopt($curlInit,CURLOPT_HEADER,true);
             curl_setopt($curlInit,CURLOPT_NOBODY,true);
             curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
@@ -541,12 +598,12 @@ class eko_ctt extends Module
         if($carrier == Configuration::get('EKO_CTT_TR_0') or $carrier == Configuration::get('EKO_CTT_TR_1')) {
             return true;
         } else {
-            $carrier_order = new Carrier($carrier);
+            $carrier_order       = new Carrier($carrier);
             $carrier_order->name = ($carrier_order->name == '0' ? "" : $carrier_order->name);
-            $carrier_cfg0  = new Carrier(Configuration::get('EKO_CTT_TR_0'));
-            $carrier_cfg0->name = ($carrier_cfg0->name == '0' ? "" : $carrier_cfg0->name);
-            $carrier_cfg1  = new Carrier(Configuration::get('EKO_CTT_TR_1'));
-            $carrier_cfg1->name = ($carrier_cfg1->name == '0' ? "" : $carrier_cfg1->name);
+            $carrier_cfg0        = new Carrier(Configuration::get('EKO_CTT_TR_0'));
+            $carrier_cfg0->name  = ($carrier_cfg0->name == '0' ? "" : $carrier_cfg0->name);
+            $carrier_cfg1        = new Carrier(Configuration::get('EKO_CTT_TR_1'));
+            $carrier_cfg1->name  = ($carrier_cfg1->name == '0' ? "" : $carrier_cfg1->name);
 
             if($carrier_order->name == $carrier_cfg0->name or $carrier_order->name == $carrier_cfg1->name)
                 return true;
@@ -585,7 +642,7 @@ class eko_ctt extends Module
 
         $html = str_replace("Envio",$this->l('Shipment'),$html);
 
-		$html = str_replace("Hora",$this->l('Time'),$html);
+        $html = str_replace("Hora",$this->l('Time'),$html);
         $html = str_replace("Estado",$this->l('Status'),$html);
         $html = str_replace("Motivo",$this->l('Info'),$html);
         $html = str_replace("Local",$this->l('Location'),$html);
@@ -615,6 +672,27 @@ class eko_ctt extends Module
         return($html);
     }
 
+    public function getCTTStates($state = true) {
+        if(is_bool($state))
+            return $this->ctt_Status;
+
+        if(is_int($state)) {
+            $key = array_search($state, array_column($this->ctt_Status, 'id'));
+        } else {
+            $key = array_search($state, array_column($this->ctt_Status, 'name'));
+        }
+        if($key === false)
+            return false;
+
+        return array('id' => $this->ctt_Status[$key]['id'], 'name' => $this->ctt_Status[$key]['name']);
+    }
+
+    public static function actionEkoCttUpdate($statusID, $orderID) {
+        $return = Hook::exec('actionEkoCttUpdate', array('id_status' => $statusID, 'id_order' => (int)($orderID)));
+
+        return $return;
+    }
+
     public function smartCopy($source, $dest, $options=array('folderPermission'=>0755,'filePermission'=>0755))
     {
         $result=false;
@@ -630,7 +708,6 @@ class eko_ctt extends Module
             }
             $result=copy($source, $__dest);
             chmod($__dest,$options['filePermission']);
-
         } elseif(is_dir($source)) {
             if($dest[strlen($dest)-1]=='/') {
                 if($source[strlen($source)-1]=='/') {
@@ -664,11 +741,20 @@ class eko_ctt extends Module
                 }
             }
             closedir($dirHandle);
-
         } else {
             $result=false;
         }
 
         return $result;
+    }
+
+    private function strposX($haystack, $needle, $number){
+        if($number == '1') {
+            return strpos($haystack, $needle);
+        } elseif($number > '1') {
+            return strpos($haystack, $needle, $this->strposX($haystack, $needle, $number - 1) + strlen($needle));
+        }
+
+        return false;
     }
 }
