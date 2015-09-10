@@ -2,7 +2,7 @@
 <module>
 	<name>eko_ctt</name>
 	<displayName><![CDATA[CTT Tracking]]></displayName>
-	<version><![CDATA[0.1.0]]></version>
+	<version><![CDATA[0.1.1]]></version>
 	<description><![CDATA[Seguir Encomenda CTT]]></description>
 	<author><![CDATA[ekosshop]]></author>
 	<tab><![CDATA[shipping_logistics]]></tab>

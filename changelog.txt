@@ -49,3 +49,11 @@ Criado um hook : actionEkoCttUpdate
             // $params['id_order']
 
         }
+
+
+versão 0.1.1
+Data : 10/09/2015
+
+função array_column() Php 5 < 5.5
+
+

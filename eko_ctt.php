@@ -33,7 +33,7 @@ class eko_ctt extends Module
     {
         $this->name     = 'eko_ctt';
         $this->tab      = 'shipping_logistics';
-        $this->version  = '0.1.0';
+        $this->version  = '0.1.1';
         $this->author   = 'ekosshop';
 
         $this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
@@ -677,14 +677,86 @@ class eko_ctt extends Module
             return $this->ctt_Status;
 
         if(is_int($state)) {
-            $key = array_search($state, array_column($this->ctt_Status, 'id'));
+            if (function_exists('array_column')) {
+                $key = array_search($state, array_column($this->ctt_Status, 'id'));
+            } else {
+                $key = array_search($state, $this->Xarray_column($this->ctt_Status, 'id'));
+            }
         } else {
-            $key = array_search($state, array_column($this->ctt_Status, 'name'));
+            if (function_exists('array_column')) {
+                $key = array_search($state, array_column($this->ctt_Status, 'name'));
+            } else {
+                $key = array_search($state, $this->Xarray_column($this->ctt_Status, 'name'));
+            }
         }
         if($key === false)
             return false;
 
         return array('id' => $this->ctt_Status[$key]['id'], 'name' => $this->ctt_Status[$key]['name']);
+    }
+
+    /**
+     * Returns the values from a single column of the input array, identified by
+     * the $columnKey.
+     *
+     * Optionally, you may provide an $indexKey to index the values in the returned
+     * array by the values from the $indexKey column in the input array.
+     *
+     * @param array $input A multi-dimensional array (record set) from which to pull
+     *                     a column of values.
+     * @param mixed $columnKey The column of values to return. This value may be the
+     *                         integer key of the column you wish to retrieve, or it
+     *                         may be the string key name for an associative array.
+     * @param mixed $indexKey (Optional.) The column to use as the index/keys for
+     *                        the returned array. This value may be the integer key
+     *                        of the column, or it may be the string key name.
+     * @return array
+    */
+    public function Xarray_column($input = null, $columnKey = null, $indexKey = null)
+    {
+
+        $paramsInput = $input;
+        $paramsColumnKey = ($columnKey !== null) ? (string) $columnKey : null;
+
+        $paramsIndexKey = null;
+        if (isset($indexKey)) {
+            if (is_float($indexKey) || is_int($indexKey)) {
+                $paramsIndexKey = (int) $indexKey;
+            } else {
+                $paramsIndexKey = (string) $indexKey;
+            }
+        }
+
+        $resultArray = array();
+
+        foreach ($paramsInput as $row) {
+            $key = $value = null;
+            $keySet = $valueSet = false;
+
+            if ($paramsIndexKey !== null && array_key_exists($paramsIndexKey, $row)) {
+                $keySet = true;
+                $key = (string) $row[$paramsIndexKey];
+            }
+
+            if ($paramsColumnKey === null) {
+                $valueSet = true;
+                $value = $row;
+            } elseif (is_array($row) && array_key_exists($paramsColumnKey, $row)) {
+                $valueSet = true;
+                $value = $row[$paramsColumnKey];
+            }
+
+            if ($valueSet) {
+                if ($keySet) {
+                    $resultArray[$key] = $value;
+                } else {
+                    $resultArray[] = $value;
+                }
+            }
+
+        }
+
+        return $resultArray;
     }
 
     public static function actionEkoCttUpdate($statusID, $orderID) {
