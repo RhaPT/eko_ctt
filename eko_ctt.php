@@ -27,18 +27,18 @@ if (!defined('_PS_VERSION_'))
 
 class eko_ctt extends Module
 {
-    public $ctt_URL, $ctt_cron, $ctt_os_0, $ctt_tr_0, $ctt_tr_1, $ctt_change, $ctt_Status;
+    public $ctt_URL, $ctt_cron, $ctt_os_0, $ctt_os_1, $ctt_tr_0, $ctt_tr_1, $ctt_change, $ctt_Status;
 
     public function __construct()
     {
         $this->name     = 'eko_ctt';
         $this->tab      = 'shipping_logistics';
-        $this->version  = '0.1.1';
+        $this->version  = '0.2.0';
         $this->author   = 'ekosshop';
 
         $this->ctt_URL  = "http://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx";
 
-        $config = Configuration::getMultiple(array('EKO_CTT_CRON', 'EKO_CTT_CHANGE_STATS', 'EKO_CTT_OS_0', 'EKO_CTT_TR_0', 'EKO_CTT_TR_1'));
+        $config = Configuration::getMultiple(array('EKO_CTT_CRON', 'EKO_CTT_CHANGE_STATS', 'EKO_CTT_OS_0', 'EKO_CTT_OS_1', 'EKO_CTT_TR_0', 'EKO_CTT_TR_1'));
         if(isset($config['EKO_CTT_CRON']))
             $this->ctt_cron = $config['EKO_CTT_CRON'];
 
@@ -47,6 +47,9 @@ class eko_ctt extends Module
 
         if(isset($config['EKO_CTT_OS_0']))
             $this->ctt_os_0 = $config['EKO_CTT_OS_0'];
+
+        if(isset($config['EKO_CTT_OS_1']))
+            $this->ctt_os_1 = $config['EKO_CTT_OS_1'];
 
         if(isset($config['EKO_CTT_TR_0']))
             $this->ctt_tr_0 = $config['EKO_CTT_TR_0'];
@@ -73,15 +76,14 @@ class eko_ctt extends Module
                                     9  => array('id' => 999010, 'name' => $this->l('International Shipment')),
                                     10 => array('id' => 999011, 'name' => $this->l('Waiting for legal procedure.')),
                                     11 => array('id' => 999012, 'name' => $this->l('Release through customs')),
-                                    12 => array('id' => 999013, 'name' => $this->l('For customs presentation'))
+                                    12 => array('id' => 999013, 'name' => $this->l('For customs presentation')),
+                                    13 => array('id' => 999014, 'name' => $this->l('Object unclaimed, returned'))
                                   );
     }
 
     public function install()
     {
-        if(!(Configuration::get('EKO_CTT_OS_0') > 0))
-            $this->create_states();
-
+        $this->create_states();
         if(!parent::install() || !$this->registerHook('displayAdminOrder') || !$this->registerHook('displayOrderDetail')
                 || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader'))
             return false;
@@ -96,7 +98,6 @@ class eko_ctt extends Module
 
         Configuration::deleteByName("EKO_CTT_CRON");
         Configuration::deleteByName("EKO_CTT_CHANGE_STATS");
-        Configuration::deleteByName("EKO_CTT_OS_0");
         Configuration::deleteByName("EKO_CTT_TR_0");
         Configuration::deleteByName("EKO_CTT_TR_1");
 
@@ -106,7 +107,8 @@ class eko_ctt extends Module
     public function create_states()
     {
         $this->order_state =    array(
-                                    array('009d95', '10110', 'Delivered',  '' , 0, 1, 1, 1)
+                                    array('#09cfff', '10110', 'Delivered',  '' , 0, 1, 1, 1),
+                                    array('darkorange', '10110', 'Object returned',  '' , 0, 1, 0, 1)
                                 );
 
         $languages = Db::getInstance()->ExecuteS('
@@ -116,29 +118,32 @@ class eko_ctt extends Module
 
         foreach($this->order_state as $key => $value)
         {
-            Db::getInstance()->Execute
-            ('
-                INSERT INTO `' . _DB_PREFIX_ . 'order_state`
-            ( `invoice`, `send_email`, `color`, `unremovable`, `logable`, `delivery`, `module_name`, `shipped`, `paid`)
-                VALUES
-            ('.$value[5].', '.$value[4].', \'#'.$value[0].'\', 1, 1, 1,\'eko_ctt\','.$value[6].','.$value[7].');
-            ');
-
-            $this->figura   = Db::getInstance()->Insert_ID();
-
-            foreach( $languages as $language_atual )
+            if(!(Configuration::get('EKO_CTT_OS_'.$key) > 0))
             {
                 Db::getInstance()->Execute
                 ('
-                    INSERT INTO `' . _DB_PREFIX_ . 'order_state_lang`
-                (`id_order_state`, `id_lang`, `name`, `template`)
+                    INSERT INTO `' . _DB_PREFIX_ . 'order_state`
+                ( `invoice`, `send_email`, `color`, `unremovable`, `logable`, `delivery`, `module_name`, `shipped`, `paid`)
                     VALUES
-                ('.$this->figura .', '.$language_atual['id_lang'].', \''.$value[2].'\', \''.$value[3].'\');
+                ('.$value[5].', '.$value[4].', \''.$value[0].'\', 1, 1, 1,\'eko_ctt\','.$value[6].','.$value[7].');
                 ');
-            }
 
-            $this->smartCopy((dirname(__file__) . "/logo.gif"),(dirname( dirname (dirname(__file__) ) ) .  "/img/os/$this->figura.gif"));
-            Configuration::updateValue("EKO_CTT_OS_$key", $this->figura);
+                $this->figura   = Db::getInstance()->Insert_ID();
+
+                foreach( $languages as $language_atual )
+                {
+                    Db::getInstance()->Execute
+                    ('
+                        INSERT INTO `' . _DB_PREFIX_ . 'order_state_lang`
+                    (`id_order_state`, `id_lang`, `name`, `template`)
+                        VALUES
+                    ('.$this->figura .', '.$language_atual['id_lang'].', \''.$value[2].'\', \''.$value[3].'\');
+                    ');
+                }
+
+                $this->smartCopy((dirname(__file__) . "/logo.gif"),(dirname( dirname (dirname(__file__) ) ) .  "/img/os/$this->figura.gif"));
+                Configuration::updateValue("EKO_CTT_OS_$key", $this->figura);
+            }
         }
 
         Db::getInstance()->Execute
@@ -431,7 +436,12 @@ class eko_ctt extends Module
             $iPos = strpos($sResult, "Entrega conseguida");
             if($iPos > 0) {
                 $entregue = 1;
-                $this->changeTrackOrderState($order);
+                $this->changeTrackOrderState($order, 1);
+            }
+            $iPos = strpos($sResult, "Entrega ao remetente");
+            if($iPos > 0) {
+                $entregue = 2;
+                $this->changeTrackOrderState($order, 2);
             }
 
             $sResult = str_replace(' class="group"','',$sResult);
@@ -579,15 +589,23 @@ class eko_ctt extends Module
         return($x);
     }
 
-    private function changeTrackOrderState($orderId) {
+    private function changeTrackOrderState($orderId, $entrega = 1) {
         if(!empty($orderId) and Configuration::get('EKO_CTT_CHANGE_STATS')){
             $order = new Order((int)$orderId);
             $use_existings_payment = !$order->hasInvoice();
             $new_history = new OrderHistory();
             $new_history->id_order = (int)$orderId;
-            if($order->current_state != (int)Configuration::get('EKO_CTT_OS_0')) {
-                $new_history->changeIdOrderState((int)Configuration::get('EKO_CTT_OS_0'), $order, $use_existings_payment);
-                $new_history->add(true);
+            if($entrega == 1) {
+                if($order->current_state != (int)Configuration::get('EKO_CTT_OS_0')) {
+                    $new_history->changeIdOrderState((int)Configuration::get('EKO_CTT_OS_0'), $order, $use_existings_payment);
+                    $new_history->add(true);
+                }
+            }
+            if($entrega == 2) {
+                if($order->current_state != (int)Configuration::get('EKO_CTT_OS_1')) {
+                    $new_history->changeIdOrderState((int)Configuration::get('EKO_CTT_OS_1'), $order, $use_existings_payment);
+                    $new_history->add(true);                    
+                }
             }
         }
 
@@ -639,6 +657,10 @@ class eko_ctt extends Module
 
         $html = str_replace("Reimpress&atilde;o de r&oacute;tulo",$this->l('Create New Label'),$html);
         $html = str_replace("Local n&atilde;o definido",$this->l('Location not set'),$html);
+
+        $html = str_replace("Objeto n&atilde;o reclamado, Devolvido",$this->l('Object unclaimed, returned'),$html);
+        $html = str_replace("Entrega ao remetente",$this->l('Delivered to the sender'),$html);
+        $html = str_replace("Destinat&aacute;rio tem apartado, Avisado no apartado",$this->l('Recipient has PO box, reported in the PO box'),$html);
 
         $html = str_replace("Envio",$this->l('Shipment'),$html);
 

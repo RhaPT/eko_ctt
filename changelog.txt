@@ -57,3 +57,9 @@ Data : 10/09/2015
 função array_column() Php 5 < 5.5
 
 
+versão 0.2.0
+Data : 24/09/2015
+
+Adicionados novos estados do envio
+Adicionado novo estado da encomenda : Devolvido
+
